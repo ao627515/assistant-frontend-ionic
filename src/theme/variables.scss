@@ -1,2 +1,26 @@
 // For information on how to create your own theme, please see:
 // http://ionicframework.com/docs/theming/
+
+/* Variables CSS Orange Brand */
+:root {
+  --orange-primary: #ff6600;
+  --orange-secondary: #ff8533;
+  --orange-light: #ffe5cc;
+  --orange-dark: #cc5200;
+  --black-primary: #000000;
+  --black-secondary: #1a1a1a;
+  --black-light: #333333;
+  --white-primary: #ffffff;
+  --white-secondary: #f8f8f8;
+  --white-tertiary: #f0f0f0;
+  --gradient-orange: linear-gradient(
+    135deg,
+    var(--orange-primary) 0%,
+    var(--orange-secondary) 100%
+  );
+  --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --border-radius: 12px;
+  --border-radius-small: 8px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

@@ -1,20 +1,198 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="main-content">
+  <!-- Unsupported Speech Message -->
+  <div *ngIf="!speechAvailable" class="unsupported-container">
+    <ion-card class="unsupported-card">
+      <ion-card-content>
+        <div class="warning-content">
+          <ion-icon name="warning-outline" class="warning-icon"></ion-icon>
+          <p>Votre navigateur ne supporte pas la reconnaissance vocale.</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <!-- Main Content Container -->
+  <div class="page-container">
+    <!-- Balance Cards -->
+    <div *ngIf="balance" class="balance-section">
+      <h2 class="section-title">Mes comptes</h2>
+      <div class="balance-grid">
+        <ion-card class="balance-card primary">
+          <ion-card-content>
+            <div class="balance-content">
+              <ion-icon name="wallet-outline" class="balance-icon"></ion-icon>
+              <div class="balance-info">
+                <div class="balance-label">Solde principal</div>
+                <div class="balance-value">{{ formatCurrency(balance.solde_principal) }}</div>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+        <ion-card class="balance-card secondary">
+          <ion-card-content>
+            <div class="balance-content">
+              <ion-icon name="call-outline" class="balance-icon"></ion-icon>
+              <div class="balance-info">
+                <div class="balance-label">Crédit communication</div>
+                <div class="balance-value">{{ formatCurrency(balance.credit_communication) }}</div>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card class="balance-card tertiary">
+          <ion-card-content>
+            <div class="balance-content">
+              <ion-icon name="wifi-outline" class="balance-icon"></ion-icon>
+              <div class="balance-info">
+                <div class="balance-label">Internet</div>
+                <div class="balance-value">{{ balance.internet_mb }} MB</div>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card class="balance-card quaternary">
+          <ion-card-content>
+            <div class="balance-content">
+              <ion-icon name="gift-outline" class="balance-icon"></ion-icon>
+              <div class="balance-info">
+                <div class="balance-label">Bonus fidélité</div>
+                <div class="balance-value">{{ formatCurrency(balance.bonus_fidelite) }}</div>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions-section">
+      <h2 class="section-title">Actions rapides</h2>
+      <div class="quick-actions-grid">
+        <ion-button *ngFor="let action of quickActions" class="quick-action-btn" [disabled]="loading"
+          (click)="action.action()">
+          {{ action.label }}
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Voice Assistant Container -->
+    <div class="assistant-container">
+      <!-- Voice Status Header -->
+      <div *ngIf="speechAvailable" class="voice-status-header">
+        <div class="assistant-title">
+          <ion-icon name="mic-outline" class="assistant-icon"></ion-icon>
+          <h2>Assistant vocal Orange</h2>
+        </div>
+        <ion-chip [color]="listening ? 'warning' : 'medium'" class="status-chip">
+          <ion-icon [name]="listening ? 'radio-outline' : 'ellipse-outline'"></ion-icon>
+          <ion-label>{{ listening ? 'Écoute... ' + countdown + 's' : 'Prêt' }}</ion-label>
+        </ion-chip>
+      </div>
+
+      <!-- Voice Controls -->
+      <div *ngIf="speechAvailable" class="voice-controls">
+        <!-- Transcript Display -->
+        <div *ngIf="transcript" class="transcript-container">
+          <div class="transcript-label">Vous avez dit :</div>
+          <div class="transcript-text">"{{ transcript }}"</div>
+        </div>
+
+        <!-- Voice Action Buttons -->
+        <div class="voice-actions">
+          <ion-button class="voice-btn primary-btn" [disabled]="listening || loading" (click)="startListening()">
+            <ion-icon name="mic-outline" slot="start"></ion-icon>
+            Parler maintenant
+          </ion-button>
+
+          <ion-button *ngIf="transcript" class="voice-btn confirm-btn" [disabled]="loading"
+            (click)="handleVoiceSubmit()">
+            <ion-icon name="send-outline" slot="start"></ion-icon>
+            Envoyer
+          </ion-button>
+        </div>
+
+        <!-- Auto Send Countdown -->
+        <div *ngIf="listening && transcript" class="auto-send-notice">
+          <ion-icon name="time-outline"></ion-icon>
+          <span>Envoi automatique dans {{ countdown }} seconde{{ countdown !== 1 ? 's' : '' }}</span>
+        </div>
+      </div>
+
+      <!-- Chat Messages -->
+      <ion-card class="chat-container">
+        <ion-card-header class="chat-header">
+          <div class="chat-title-section">
+            <ion-icon name="chatbubbles-outline" class="chat-icon"></ion-icon>
+            <ion-card-title class="chat-title">Conversation</ion-card-title>
+            <div *ngIf="isPlaying" class="audio-indicator">
+              <ion-icon name="volume-high-outline" class="audio-icon"></ion-icon>
+              <span class="audio-text">En cours...</span>
+            </div>
+          </div>
+        </ion-card-header>
+
+        <ion-card-content class="chat-messages">
+          <!-- Empty State -->
+          <div *ngIf="chatHistory.length === 0" class="empty-chat">
+            <div class="empty-chat-content">
+              <ion-icon name="chatbubble-ellipses-outline" class="empty-icon"></ion-icon>
+              <h3>Bonjour !</h3>
+              <p>Je suis votre assistant Orange Money</p>
+              <p class="empty-subtitle">Posez-moi vos questions ou utilisez la reconnaissance vocale</p>
+            </div>
+          </div>
+
+          <!-- Messages -->
+          <div *ngFor="let msg of chatHistory" class="message-wrapper"
+            [ngClass]="{'user-message': msg.type === 'user', 'assistant-message': msg.type === 'assistant', 'error-message': msg.type === 'error'}">
+            <div class="message-bubble">
+              <p class="message-text">{{ msg.text }}</p>
+
+              <!-- Audio Controls for Assistant Messages -->
+              <div *ngIf="msg.audioId && msg.type === 'assistant'" class="audio-controls">
+                <ion-button size="small" fill="clear" class="audio-replay-btn" [disabled]="isPlaying"
+                  (click)="playAudio(msg.audioId!)">
+                  <ion-icon [name]="isPlaying ? 'pause-outline' : 'volume-high-outline'"></ion-icon>
+                  Réécouter
+                </ion-button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Loading Animation -->
+          <div *ngIf="loading" class="message-wrapper assistant-message">
+            <div class="loading-bubble">
+              <div class="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <span class="loading-text">L'assistant réfléchit...</span>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Text Input -->
+      <div class="text-input-container">
+        <div class="input-wrapper">
+          <ion-input class="text-input" [(ngModel)]="textInput" placeholder="Tapez votre message..."
+            [disabled]="loading" (keyup.enter)="handleTextSubmit()" fill="outline">
+          </ion-input>
+          <ion-button class="send-btn" [disabled]="!textInput.trim() || loading" (click)="handleTextSubmit()">
+            <ion-icon name="send-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Display -->
+    <div *ngIf="error" class="error-notification">
+      <ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>
+      <span class="error-text">{{ error }}</span>
+    </div>
   </div>
 </ion-content>
