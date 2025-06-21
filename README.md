@@ -27,8 +27,6 @@ cd assistant-frontend-ionic
 npm install
 ```
 
-````
-
 ### Lancer en développement
 
 ```bash
@@ -76,8 +74,13 @@ L’application communique avec un backend Flask attendu à l’adresse `http://
 - `@ionic/angular`, `@capacitor/core`, `@capacitor-community/speech-recognition`
 - `rxjs`, `@angular/*`
 
+## Auteurs
+
+- [Tapsoba Faridatou](https://github.com/biabkaahfa)
+- [Ouédraogo Abdoul Aziz](https://github.com/ao627515)
+- [Simporé Elie](https://github.com/simporeelie)
+- [Sawadogo Adam Sharif](https://github.com/Oursdingo)
+
 ## Licence
 
 MIT
-
-````
