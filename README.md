@@ -1,118 +1,83 @@
-# Assistant Frontend Ionic
+# Assistant Orange Money – Frontend Ionic
 
-Ce projet est une application frontend développée avec [Ionic Framework](https://ionicframework.com/) et [Angular](https://angular.io/), intégrant la reconnaissance vocale (web et mobile via Capacitor) pour interagir avec un assistant Orange Money. L'application permet d'afficher le solde, l'historique, de recharger du crédit, de gérer les forfaits internet, et d'utiliser des commandes vocales ou textuelles.
+Ce projet est une application mobile/web hybride développée avec **Ionic Framework** (Angular) pour interagir avec l’assistant Orange Money. Il intègre la reconnaissance vocale sur le web et le mobile (Capacitor), ainsi que l’interfaçage avec un backend Flask qui simule les opérations.
 
-## Fonctionnalités principales
+## Contexte
 
-- **Affichage des comptes** : solde principal, crédit communication, internet, bonus fidélité.
-- **Chat avec l'assistant** : historique des messages, réponses textuelles et audio.
-- **Reconnaissance vocale** : support web (SpeechRecognition) et mobile (Capacitor SpeechRecognition).
-- **Actions rapides** : boutons pour les requêtes fréquentes.
-- **Lecture audio** : les réponses de l'assistant peuvent être écoutées.
-- **Design responsive** : adapté mobile et desktop, avec support du mode sombre.
+> Ce projet s’inscrit dans un **MVP de démonstration**. Les traitements Orange Money sont **simulés dans le backend**, aucun appel réel n’est effectué.  
+> Il communique avec un backend dédié disponible ici :  
+> 👉 [assistant-backend (Flask)](https://github.com/ao627515/assistant-backend)
 
-## Structure du projet
+L’objectif est d’explorer la faisabilité d’une interface vocale intuitive pour l’USSD Orange Money au Burkina Faso. L’assistant intègre également un LLM local (via Ollama) pour des interactions plus générales.
 
-```
-src/
-  app/
-    home/
-      home.page.ts        // Logique principale de la page d'accueil
-      home.page.html      // Template de la page d'accueil
-      home.page.scss      // Styles de la page d'accueil
-      ...
-    services/
-      speech/
-        speech.service.ts // Service de reconnaissance vocale (web & mobile)
-    app.module.ts         // Module principal Angular
-    app-routing.module.ts // Routing principal
-    ...
-  assets/                 // Images, icônes, etc.
-  environments/           // Fichiers d'environnement Angular
-  theme/variables.scss    // Variables de thème (couleurs, etc.)
-  global.scss             // Styles globaux
-```
+## Fonctionnalités
+
+- Affichage des comptes : solde, crédit, internet, bonus
+- Chat vocal/texte avec historique
+- Lecture audio automatique des réponses (gTTS)
+- Reconnaissance vocale : web (SpeechRecognition) et mobile (Capacitor SpeechRecognition)
+- Thème responsive (mobile & desktop) avec mode sombre
+- Actions rapides via boutons
 
 ## Installation
 
-1. **Cloner le dépôt**
-
-```sh
-git clone <url-du-repo>
+```bash
+git clone https://github.com/ao627515/assistant-frontend-ionic.git
 cd assistant-frontend-ionic
-```
-
-2. **Installer les dépendances**
-
-```sh
 npm install
 ```
 
-3. **Lancer l'application en développement**
+````
 
-```sh
+### Lancer en développement
+
+```bash
 npm start
 ```
 
-L'application sera accessible sur [http://localhost:4200](http://localhost:4200).
+Accès : [http://localhost:4200](http://localhost:4200)
 
-## Tests
+## Capacitor (mobile)
 
-Pour lancer les tests unitaires :
-
-```sh
-npm test
-```
-
-## Configuration Capacitor (mobile)
-
-Pour utiliser la reconnaissance vocale sur mobile :
-
-1. Installer les plateformes nécessaires :
-
-```sh
+```bash
 npx cap add android
-npx cap add ios
-```
-
-2. Synchroniser les plugins Capacitor :
-
-```sh
 npx cap sync
-```
-
-3. Ouvrir le projet dans Android Studio ou Xcode :
-
-```sh
 npx cap open android
-npx cap open ios
 ```
 
-## API Backend
+## Structure
 
-L'application attend un backend accessible sur `http://localhost:5000` avec les endpoints suivants :
+```
+src/
+├── app/
+│   ├── home/            # Page principale
+│   ├── services/speech/ # Reconnaissance vocale
+│   └── ...
+├── assets/
+├── theme/
+└── environments/
+```
 
-- `GET /solde` : retourne les informations de solde.
-- `POST /process` : traite une requête utilisateur et retourne la réponse de l'assistant (texte + audio_id).
-- `GET /audio/:audioId` : retourne le fichier audio correspondant à la réponse.
+## API attendue
+
+L’application communique avec un backend Flask attendu à l’adresse `http://localhost:5000` :
+
+- `GET /solde`
+- `POST /process`
+- `GET /audio/:audioId`
 
 ## Personnalisation
 
-- **Thème** : modifiez `src/theme/variables.scss` pour adapter les couleurs.
-- **Actions rapides** : modifiez le tableau `quickActions` dans [`HomePage`](src/app/home/home.page.ts) pour ajouter/retirer des actions.
+- Modifier `theme/variables.scss` pour les couleurs
+- Modifier `quickActions` dans `home.page.ts`
 
-## Dépendances principales
+## Dépendances clés
 
-- `@ionic/angular`
-- `@capacitor/core`
-- `@capacitor-community/speech-recognition`
-- `@angular/*`
-- `rxjs`
+- `@ionic/angular`, `@capacitor/core`, `@capacitor-community/speech-recognition`
+- `rxjs`, `@angular/*`
 
 ## Licence
 
-Projet sous licence MIT (à adapter selon votre besoin).
+MIT
 
----
-
-> \_Ce projet a été généré avec Ionic et Angular. Pour plus d'informations, consultez la documentation
+````
